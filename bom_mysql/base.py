@@ -110,7 +110,7 @@ class MysqlConnect(object):
             self.tunnel.stop()
 
 
-def loadenv(self):
+def loadenv():
     load_dotenv(verbose=True)  # verbose .env 파일 누락 등의 경고 메시지를 출력할 것인지에 대한 옵션
     return {
         "host": os.getenv("DB_HOST"),
