@@ -109,17 +109,18 @@ class MysqlConnect(object):
             logger.debug("tunneling stop")
             self.tunnel.stop()
 
-    def loadenv(self):
-        load_dotenv(verbose=True)  # verbose .env 파일 누락 등의 경고 메시지를 출력할 것인지에 대한 옵션
-        return {
-            "host": os.getenv("DB_HOST"),
-            "user": os.getenv("DB_USERNAME"),
-            "passwd": os.getenv("DB_PASSWORD"),
-            "db": os.getenv("DB_DEFAULT"),
-            "port": int(os.getenv("DB_PORT")),
-            "ssh_host": os.getenv("SSH_HOST"),
-            "ssh_username": os.getenv("SSH_USERNAME"),
-            "ssh_pkey": os.getenv("SSH_PRIVATE_KEY"),
-            "ssh_port": int(os.getenv("SSH_PORT")),
-            "tunnel": int(os.getenv("TUNNEL"))
+
+def loadenv(self):
+    load_dotenv(verbose=True)  # verbose .env 파일 누락 등의 경고 메시지를 출력할 것인지에 대한 옵션
+    return {
+        "host": os.getenv("DB_HOST"),
+        "user": os.getenv("DB_USERNAME"),
+        "passwd": os.getenv("DB_PASSWORD"),
+        "db": os.getenv("DB_DEFAULT"),
+        "port": int(os.getenv("DB_PORT")),
+        "ssh_host": os.getenv("SSH_HOST"),
+        "ssh_username": os.getenv("SSH_USERNAME"),
+        "ssh_pkey": os.getenv("SSH_PRIVATE_KEY"),
+        "ssh_port": int(os.getenv("SSH_PORT")),
+        "tunnel": int(os.getenv("TUNNEL"))
         }
