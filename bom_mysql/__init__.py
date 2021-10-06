@@ -1,3 +1,3 @@
-from .base import MysqlConnect, cleanup
+from .base import MysqlConnect, loadenv
 
-__all__ = ["MysqlConnect", "cleanup", "loadenv"]
+__all__ = ["MysqlConnect", "loadenv"]
