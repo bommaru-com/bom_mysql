@@ -1,7 +1,10 @@
 # Usage
 
-.env 파일의 설정으로 필요시 ssh 터널링을 하여 mysql 접속 및 종료 처리
+.env 파일의 설정으로 필요시 ssh 터널링을 하여 mysql 접속 및 종료 처
 ```
+# requirements.txt
+git+https://github.com/bommaru-com/bom_mysql.git
+
 # .env
 DB_HOST={database host}
 DB_PORT={database port}
