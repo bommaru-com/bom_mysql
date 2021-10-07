@@ -1,3 +1,31 @@
+# Usage
+
+.env 파일의 설정으로 필요시 ssh 터널링을 하여 mysql 접속 및 종료 처리
+```
+# .env
+DB_HOST={database host}
+DB_PORT={database port}
+DB_USERNAME={database username}
+DB_PASSWORD={database password}
+DB_DEFAULT={default database name}
+SSH_HOST={jump server host}
+SSH_PORT={jump server port}
+SSH_USERNAME={jump server username}
+SSH_PRIVATE_KEY={pem key path}
+TUNNEL={use tunnel flag 0 or 1}
+
+# usage
+>>> from bom_mysql import MysqlConnect
+>>> from bom_mysql import loadenv
+
+>>> conf = loadenv()
+>>> db = MysqlConnect(conf)
+
+>>> db.cursor.execute("select now()")
+>>> now = db.cursor.fetchone()
+>>> MysqlConnect.cleanup(db)  # 프로그램에서 사용시 종료되면 atexit 모듈에 의해 호출되어 처리됩니다.
+```
+
 
 # Python Project Template
 
