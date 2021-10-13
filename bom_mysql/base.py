@@ -91,7 +91,7 @@ class MysqlConnect(object):
             "port": conf["port"]
         }
         self.conn = pymysql.connect(**mysqlconf)
-        self.cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
         logger.debug("mysql connection open")
 
         atexit.register(self.cleanup)
@@ -123,4 +123,4 @@ def loadenv():
         "ssh_pkey": os.getenv("SSH_PRIVATE_KEY"),
         "ssh_port": int(os.getenv("SSH_PORT")),
         "tunnel": int(os.getenv("TUNNEL"))
-        }
+    }
