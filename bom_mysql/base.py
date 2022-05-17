@@ -88,7 +88,8 @@ class MysqlConnect(object):
             "user": conf["user"],
             "passwd": conf["passwd"],
             "db": conf["db"],
-            "port": conf["port"]
+            "port": conf["port"],
+            "charset": conf["charset"] if "charset" in conf and conf["charset"] else "utf8",
         }
         self.conn = pymysql.connect(**mysqlconf)
         self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
