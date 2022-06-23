@@ -71,7 +71,7 @@ class MysqlConnect(object):
         self.conn = None
         self.cursor = None
 
-        if sys.platform == "darwin" or conf["tunnel"]:
+        if conf["tunnel"]:
             sshconf = {
                 "ssh_username": conf["ssh_username"],
                 "ssh_pkey": conf["ssh_pkey"],
