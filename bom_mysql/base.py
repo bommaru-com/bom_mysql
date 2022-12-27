@@ -4,6 +4,7 @@
 import os
 # import re
 import sys
+import copy
 import atexit
 import pymysql
 
@@ -65,7 +66,7 @@ class MysqlConnect(object):
         cursor: obj
             mysql cursor
         """
-
+        conf = copy.deepcopy(conf)
         logger.debug(conf)
         self.tunnel = None
         self.conn = None
