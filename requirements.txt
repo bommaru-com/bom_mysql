@@ -7,3 +7,4 @@ pymysql
 sshtunnel
 python-dotenv
 loguru
+backoff
