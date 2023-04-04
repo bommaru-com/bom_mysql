@@ -6,6 +6,7 @@ import os
 import sys
 import copy
 import atexit
+import backoff
 import pymysql
 
 from sshtunnel import SSHTunnelForwarder
@@ -51,7 +52,9 @@ def base_function() -> str:
 
 class MysqlConnect(object):
 
-    def __init__(self, conf):
+    BACKOFF_MAX_TIME = 10
+
+    def __init__(self, conf, version2=False):
         """
         mysql 연결
 
@@ -66,11 +69,53 @@ class MysqlConnect(object):
         cursor: obj
             mysql cursor
         """
-        conf = copy.deepcopy(conf)
-        logger.debug(conf)
+
+        global BACKOFF_MAX_TIME
+        BACKOFF_MAX_TIME = conf.get('backoff_max_time') or BACKOFF_MAX_TIME
+
         self.tunnel = None
         self.conn = None
         self.cursor = None
+
+        conf = copy.deepcopy(conf)
+        self.conf = conf
+
+        logger.debug(conf)
+
+        if not version2:
+            if conf["tunnel"]:
+                sshconf = {
+                    "ssh_username": conf["ssh_username"],
+                    "ssh_pkey": conf["ssh_pkey"],
+                    "remote_bind_address": (conf["host"], conf["port"])
+                }
+                self.tunnel = SSHTunnelForwarder((conf["ssh_host"], conf["ssh_port"]), **sshconf)
+                self.tunnel.start()
+
+                conf["host"] = '127.0.0.1'
+                conf["port"] = self.tunnel.local_bind_port
+                logger.debug("tunneling start")
+
+            mysqlconf = {
+                "host": conf["host"],
+                "user": conf["user"],
+                "passwd": conf["passwd"],
+                "db": conf["db"],
+                "port": conf["port"],
+                "charset": conf["charset"] if "charset" in conf and conf["charset"] else "utf8mb4",
+            }
+            self.conn = pymysql.connect(**mysqlconf)
+            self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
+            logger.debug("mysql connection open")
+
+        atexit.register(self.cleanup)
+
+    def __call__(self):
+        return self.__init__()
+
+    @backoff.on_exception(backoff.expo, Exception, max_time=BACKOFF_MAX_TIME)
+    def connect(self):
+        conf = self.conf
 
         if conf["tunnel"]:
             sshconf = {
@@ -80,6 +125,7 @@ class MysqlConnect(object):
             }
             self.tunnel = SSHTunnelForwarder((conf["ssh_host"], conf["ssh_port"]), **sshconf)
             self.tunnel.start()
+
             conf["host"] = '127.0.0.1'
             conf["port"] = self.tunnel.local_bind_port
             logger.debug("tunneling start")
@@ -94,12 +140,9 @@ class MysqlConnect(object):
         }
         self.conn = pymysql.connect(**mysqlconf)
         self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
-        logger.debug("mysql connection open")
+        logger.debug("mysql connection open - version2")
 
-        atexit.register(self.cleanup)
-
-    def __call__(self):
-        return self.__init__()
+        return self
 
     def cleanup(self):
         """db close, tunnel stop"""
