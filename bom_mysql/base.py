@@ -48,11 +48,10 @@ def base_function() -> str:
     """
     return "hello from base function"
 '''
+BACKOFF_MAX_TIME = 10
 
 
 class MysqlConnect(object):
-
-    BACKOFF_MAX_TIME = 10
 
     def __init__(self, conf, version2=False):
         """
